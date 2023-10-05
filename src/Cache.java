@@ -1,6 +1,4 @@
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Cache {
     private HashMap<Integer, Integer> freqMap = new HashMap<>();
@@ -36,21 +34,14 @@ public class Cache {
 
                 // get least frequently used key
                 int leastFrequency = 1;
-                List<Integer> leastFrequencyKeys = new ArrayList<Integer> ();
+                int leastFrequencyKey = 0;
                 for(HashMap.Entry<Integer, Integer> val : freqMap.entrySet()){
                     if (val.getValue() <= leastFrequency) {
                         leastFrequency = val.getValue();
-                        leastFrequencyKeys.add(val.getKey());
+                        leastFrequencyKey = val.getKey();
                     }
                 }
-
-                // get oldest key
-                // int oldestKey = 1;
-                // for (int i : leastFrequencyKeys.size()) {
-
-                // }
-
-                int removedKey;
+                int removedKey = leastFrequencyKey;
 
                 // remove least frequently used entry
                 System.out.printf("Removing key: %d with frequency: %d\n", leastFrequencyKey, leastFrequency);
