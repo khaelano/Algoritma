@@ -21,22 +21,33 @@ public class Cache {
 
         // check if the cache already contains the same block
         Block proposedblock = new Block(value);
-        for (Block block : this.cache) {
-            System.out.println("looping");
-            if (block.value == proposedblock.value) {
-                // get the index of the proposed block in cache 
-                // and increase its frequency
+        if (this.cache.size() != 0) {
+            // search if there are any block contains the same
+            // value as the proposed block
+            boolean isSameValue = false;
+            int sameValueIndex = 0;
+            for (Block block : this.cache) {
+                if (block.value == proposedblock.value) {
+                    // get the index of the proposed block in cache 
+                    isSameValue = true;
+                    sameValueIndex = this.cache.indexOf(block);
+                }
+            }
+
+            if (isSameValue) {
+                // if the cache contains the same value
                 System.out.println("This value is already in cache!");
-                block.frequency++;
+                this.cache.get(sameValueIndex).frequency++;
                 updateAge();
-    
             } else {
-                // put the proposed block into the cache
-                System.out.println("added new value");
                 this.cache.add(proposedblock);
                 updateAge();
-                System.out.println("putting " + value);
             }
+
+        } else {
+            // put the proposed block into the cache
+            this.cache.add(proposedblock);
+            updateAge();
         }
 
     }
@@ -64,7 +75,7 @@ public class Cache {
         Block removedBlock = tempLeastFreqUsedBlock;
 
         // find the oldest lFU block if there are
-        // multiple least frequently used block
+        // multiple LFU blocks
         int tempOldest = Integer.MIN_VALUE;
         Block tempOldestBlock = new Block(0);
         if (!leastUsedBlocks.isEmpty()) {
