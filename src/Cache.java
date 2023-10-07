@@ -1,94 +1,83 @@
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Cache {
-    private HashMap<Integer, Integer> freqMap = new HashMap<>();
-    private HashMap<Integer, Integer> valMap = new HashMap<>();
-    private HashMap<Integer, Integer> ageMap = new HashMap<>();
-    int size;
+    ArrayList<Block> cache;
+    final int capacity;
 
-    public Cache(int size) {
-        this.size = size;
+    public Cache(int capacity) {
+        this.capacity = capacity;
+        this.cache = new ArrayList<>();
     }
 
-    public int get(int key) {
-        // get the value of specified key, but does not remove it from cache
-        freqMap.put(key, freqMap.get(key) + 1);
-        return valMap.get(key);
-    }
+    public void put(int value) {
+        Block proposedBlock = new Block(value);
+        // search if there are any block contains the same
+        // value as the proposed block
+        boolean isSameValue = false;
+        int sameValueIndex = 0;
+        for (Block block : this.cache) {
+            if (block.value == proposedBlock.value) {
+                // get the index of the proposed block in cache 
+                isSameValue = true;
+                sameValueIndex = this.cache.indexOf(block);
+            }
+        }
 
-    public int put(int key, int value) {
-        // put new value and key pair
-        if (valMap.containsKey(key) == true) {
-            // if the key is already used, replace the value with the new one
-            valMap.put(key, value);
-            freqMap.put(key, freqMap.get(key) + 1);
-            ageMap.put(key, 0);
+        // check if the cache is already full
+        if (this.cache.size() == this.capacity && isSameValue != true) {
+            // find and remove the least frequently used block
+            // or oldest block if there are multiple least frequency
+            Block removedBlock = findLFU();
+            this.cache.remove(removedBlock);
+            System.out.println("Removed " + removedBlock.value + " from cache");
+        }
 
-            // update age for each elements
-            ageMap.forEach((k, v) -> {v++; ageMap.replace(k, v);});
-            System.out.printf("The value of %d is replaced with %d\n", key, value);
+        // check if the cache already contains the same block
+        if (this.cache.size() != 0) {
+            if (isSameValue) {
+                // if the cache contains the same value
+                System.out.println("This value is already in cache!");
+                this.cache.get(sameValueIndex).frequency++;
+                updateAge();
+            } else {
+                this.cache.add(proposedBlock);
+                updateAge();
+            }
 
         } else {
-            if (valMap.size() == size) {
-                System.out.println("The cache is full, removing least frequently used entry");
-
-                // get least frequently used key
-                int leastFrequency = 1;
-                int leastFrequencyKey = 0;
-                for(HashMap.Entry<Integer, Integer> val : freqMap.entrySet()){
-                    if (val.getValue() <= leastFrequency) {
-                        leastFrequency = val.getValue();
-                        leastFrequencyKey = val.getKey();
-                    }
-                }
-                int removedKey = leastFrequencyKey;
-
-                // remove least frequently used entry
-                System.out.printf("Removing key: %d with frequency: %d\n", leastFrequencyKey, leastFrequency);
-                valMap.remove(removedKey);
-                freqMap.remove(removedKey);
-                ageMap.remove(removedKey);
-
-                // add new entry
-                valMap.put(key, value);
-                freqMap.put(key, 1);
-                ageMap.put(key, 0);
-
-                // update age for each elements
-                ageMap.forEach((k, v) -> {v++; ageMap.replace(k, v);});
-
-                System.out.printf("The value of %d is replaced with %d\n", key, value);
-                
-            } else {
-                valMap.put(key, value);
-                freqMap.put(key, 1);
-                ageMap.put(key, 0);
-
-                // update age for each elements
-                ageMap.forEach((k, v) -> {v++; ageMap.replace(k, v);});
-
-            }
-            
+            // put the proposed block into the cache
+            this.cache.add(proposedBlock);
+            updateAge();
         }
-        return 0;
+
     }
 
-    public int retrieve(int key) {
-        // get the value of specified key and remove it from cache
-        // get the value
-        valMap.get(key);
-        freqMap.get(key);
-
-        // remove entry from both value and frequency map
-        valMap.remove(key);
-        freqMap.remove(key);
-        return 0; 
+    public Block see(int index) {
+        return this.cache.get(index);
     }
 
-    public int clearAll() {
-        // clear all key and value of the cache
-        valMap.clear();
-        freqMap.clear();
-        return 0;
+    public boolean isEmpty() {
+        return this.cache.isEmpty();
+    }
+    private void updateAge() {
+        // this method will increment each block age
+        this.cache.forEach((block) -> block.age++);
+    }
+
+    private Block findLFU() {
+        // find least frequently used block
+        ArrayList<Block> leastUsedBlocks = new ArrayList<>();
+        int tempLeastFreq = Integer.MAX_VALUE;
+        for (Block block : this.cache) {
+            if (block.frequency < tempLeastFreq) {
+                leastUsedBlocks.clear();
+                tempLeastFreq = block.frequency;
+                leastUsedBlocks.add(block);
+
+            } else if (block.frequency == tempLeastFreq) {
+                leastUsedBlocks.add(block);
+            }
+        }
+        return leastUsedBlocks.get(0);
     }
 }
