@@ -10,13 +10,13 @@ public class Cache {
     }
 
     public void put(int value) {
-        Block proposedblock = new Block(value);
+        Block proposedBlock = new Block(value);
         // search if there are any block contains the same
         // value as the proposed block
         boolean isSameValue = false;
         int sameValueIndex = 0;
         for (Block block : this.cache) {
-            if (block.value == proposedblock.value) {
+            if (block.value == proposedBlock.value) {
                 // get the index of the proposed block in cache 
                 isSameValue = true;
                 sameValueIndex = this.cache.indexOf(block);
@@ -34,20 +34,19 @@ public class Cache {
 
         // check if the cache already contains the same block
         if (this.cache.size() != 0) {
-
             if (isSameValue) {
                 // if the cache contains the same value
                 System.out.println("This value is already in cache!");
                 this.cache.get(sameValueIndex).frequency++;
                 updateAge();
             } else {
-                this.cache.add(proposedblock);
+                this.cache.add(proposedBlock);
                 updateAge();
             }
 
         } else {
             // put the proposed block into the cache
-            this.cache.add(proposedblock);
+            this.cache.add(proposedBlock);
             updateAge();
         }
 
