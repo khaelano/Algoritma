@@ -59,6 +59,7 @@ public class Cache {
     public boolean isEmpty() {
         return this.cache.isEmpty();
     }
+    
     private void updateAge() {
         // this method will increment each block age
         this.cache.forEach((block) -> block.age++);

@@ -1,3 +1,13 @@
+// Algoritma LFU
+
+// Nama: Khaelano Abroor Maulana
+// NIM : 235150200111051
+
+// Nama: Muhammad Lutfi Aziz
+// NIM : 235150207111058
+
+// Kelas: TIF-E
+
 import java.util.Scanner;
 
 public class App {
